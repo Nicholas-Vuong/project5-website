@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Starting Project 5 deployment"
+  build:
+    commands:
+      - echo "Syncing site contents to S3"
+      - aws s3 sync . "s3://${DEPLOY_BUCKET}" --delete --exclude ".git/*" --exclude ".gitignore" --exclude "README.md" --exclude "PROJECT5_SUBMISSION.md" --exclude "buildspec.yml"
+      - echo "Creating CloudFront invalidation"
+      - aws cloudfront create-invalidation --distribution-id "${DISTRIBUTION_ID}" --paths "/*"
+
+artifacts:
+  files:
+    - '**/*'
